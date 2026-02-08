@@ -1,0 +1,433 @@
+{
+    "serverRoot": "",
+    "document_location": "/var/www/html/openemr/sites/default",
+    "username": "",
+    "password": "",
+    "hie": "MyHealth",
+    "time_start": "19710326000000-0300",
+    "time_end": "20260127203029-0300",
+    "client_id": "",
+    "created_time": "20260127203029",
+    "created_time_timezone": "20260127203029-0300",
+    "timezone_local_offset": "-0300",
+    "send": "0",
+    "doc_type": "",
+    "assignedEntity": {
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": ""
+    },
+    "telecom": {
+        "use": "WP",
+        "value": ""
+    },
+    "representedOrganization": {
+        "name": "",
+        "telecom": {
+            "use": "WP",
+            "value": ""
+        },
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": ""
+    },
+    "referral_reason": [
+        {
+            "text": ""
+        },
+        ""
+    ],
+    "patient": {
+        "author": {
+            "time": "2026-01-27 20:16:08",
+            "id": "a0f044f3-01d9-4cbe-a649-ee89e6ec274b",
+            "physician_type": "Family Medicine",
+            "physician_type_code": "207Q00000X",
+            "physician_type_system": "2.16.840.1.114222.4.11.1066",
+            "physician_type_system_name": "ValueSet Healthcare Provider Taxonomy (HIPAA)",
+            "streetAddressLine": "",
+            "facility_oid": "2.16.840.1.113883.4.6",
+            "facility_npi": "",
+            "facility_name": "EPA | Programa Mujer",
+            "city": "",
+            "state": "",
+            "postalCode": "",
+            "country": "",
+            "telecom": "",
+            "fname": "Alejandro S.",
+            "lname": "D'Alessandro",
+            "npi": ""
+        },
+        "id": "1",
+        "uuid": "a0f0ac99-c09d-48d2-aef8-ee435e99615c",
+        "encounter": "",
+        "prefix": "Mrs.",
+        "fname": "María",
+        "mname": "Cecilia",
+        "lname": "Bourdon",
+        "suffix": "",
+        "previous_names": "",
+        "birth_fname": "",
+        "birth_mname": "",
+        "birth_lname": "",
+        "use": "HP",
+        "street": [
+            "Húsares 2248",
+            "6 E"
+        ],
+        "city": "CABA",
+        "state": "CABA",
+        "postalCode": "1428",
+        "country": "Argentina",
+        "previous_addresses": {
+            "address": {
+                "use": "home",
+                "street": [
+                    "",
+                    ""
+                ],
+                "city": "",
+                "state": "",
+                "postalCode": "",
+                "country": "USA",
+                "period_start": "1969-12-31",
+                "period_end": ""
+            }
+        },
+        "ssn": "",
+        "dob": "19710326",
+        "gender": "Female",
+        "gender_code": "F",
+        "sex_observation": "Female",
+        "status": "married",
+        "status_code": "M",
+        "phone_home": "",
+        "phone_mobile": "5491122840177",
+        "phone_work": "",
+        "phone_emergency": "5491169315830",
+        "email": "maricebourdon@gmail.com",
+        "religion": "",
+        "religion_code": "",
+        "race": "null_flavor",
+        "race_code": "",
+        "race_group": "null_flavor",
+        "race_group_code": "",
+        "ethnicity": "null_flavor",
+        "ethnicity_code": "",
+        "language": "",
+        "language_code": "",
+        "tribal_code": "",
+        "tribal_title": "",
+        "tribal": "",
+        "related_persons": ""
+    },
+    "guardian": {
+        "fname": "María",
+        "lname": "Bourdon",
+        "code": "",
+        "relation": "",
+        "display_name": "",
+        "street": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": ""
+    },
+    "sdoh_data": {
+        "disability_code": "",
+        "disability": "",
+        "disability_title": "",
+        "pregnancy_code": "",
+        "pregnancy": "",
+        "pregnancy_title": ""
+    },
+    "occupation": {
+        "start_date": "20260127",
+        "industry_start_date": "20260127",
+        "occupation_code": "",
+        "occupation_title": "",
+        "industry_code": "",
+        "industry_title": ""
+    },
+    "encounter_provider": {
+        "facility_id": "",
+        "facility_npi": "",
+        "facility_oid": "",
+        "facility_name": "",
+        "facility_phone": "",
+        "facility_fax": "",
+        "facility_street": "",
+        "facility_city": "",
+        "facility_state": "",
+        "facility_postal_code": "",
+        "facility_country_code": ""
+    },
+    "author": {
+        "time": "2026-01-27 20:30:29-0300",
+        "id": "a0f044f3-01d9-4cbe-a649-ee89e6ec274b",
+        "physician_type": "Family Medicine",
+        "physician_type_code": "207Q00000X",
+        "physician_type_system": "2.16.840.1.114222.4.11.1066",
+        "physician_type_system_name": "ValueSet Healthcare Provider Taxonomy (HIPAA)",
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": "",
+        "fname": "Alejandro S.",
+        "lname": "D'Alessandro",
+        "npi": ""
+    },
+    "data_enterer": {
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": "0",
+        "fname": "",
+        "lname": ""
+    },
+    "informer": {
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": "0",
+        "fname": "",
+        "lname": "",
+        "personal_informant": ""
+    },
+    "custodian": {
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": "0",
+        "name": "",
+        "organization": ""
+    },
+    "information_recipient": {
+        "fname": "",
+        "lname": "",
+        "organization": "",
+        "street": "",
+        "city": "",
+        "state": "",
+        "zip": "",
+        "phonew1": ""
+    },
+    "legal_authenticator": {
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": "0",
+        "fname": "",
+        "lname": ""
+    },
+    "document_participants": {
+        "participant": {
+            "date_time": "2026-01-27 20:30:29-0300",
+            "fname": "Alejandro S.",
+            "lname": "D'Alessandro",
+            "organization": "",
+            "organization_id": "a0f044d0-fb92-4425-87ad-1131dc8f9d72",
+            "organization_npi": "",
+            "organization_taxonomy": "",
+            "organization_taxonomy_desc": "",
+            "street": "",
+            "city": "",
+            "state": "",
+            "postalCode": "",
+            "phonew1": "",
+            "address_use": "WP",
+            "type": "REFB"
+        }
+    },
+    "authenticator": {
+        "streetAddressLine": "",
+        "city": "",
+        "state": "",
+        "postalCode": "",
+        "country": "",
+        "telecom": "0",
+        "fname": "",
+        "lname": ""
+    },
+    "primary_care_provider": {
+        "provider": {
+            "author": {
+                "time": "2026-01-27 20:16:08",
+                "id": "a0f044f3-01d9-4cbe-a649-ee89e6ec274b",
+                "physician_type": "Family Medicine",
+                "physician_type_code": "207Q00000X",
+                "physician_type_system": "2.16.840.1.114222.4.11.1066",
+                "physician_type_system_name": "ValueSet Healthcare Provider Taxonomy (HIPAA)",
+                "streetAddressLine": "",
+                "facility_oid": "2.16.840.1.113883.4.6",
+                "facility_npi": "",
+                "facility_name": "EPA | Programa Mujer",
+                "city": "",
+                "state": "",
+                "postalCode": "",
+                "country": "",
+                "telecom": "",
+                "fname": "Alejandro S.",
+                "lname": "D'Alessandro",
+                "npi": ""
+            },
+            "prefix": "",
+            "fname": "Alejandro S.",
+            "lname": "D'Alessandro",
+            "speciality": "Admin",
+            "organization": "EPA | Programa Mujer",
+            "telecom": "",
+            "street": "",
+            "city": "",
+            "state": "",
+            "zip": "",
+            "table_id": "provider-1",
+            "npi": "",
+            "physician_type": "",
+            "physician_type_code": "",
+            "taxonomy": "207Q00000X",
+            "taxonomy_description": "Family Medicine",
+            "provider_since": "2026-01-27 20:30:29-0300",
+            "role_code": "primary",
+            "role_display": "Primary Care Provider"
+        }
+    },
+    "care_team": {
+        "author": {
+            "time": "2026-01-27 20:16:08",
+            "id": "a0f044f3-01d9-4cbe-a649-ee89e6ec274b",
+            "physician_type": "Family Medicine",
+            "physician_type_code": "207Q00000X",
+            "physician_type_system": "2.16.840.1.114222.4.11.1066",
+            "physician_type_system_name": "ValueSet Healthcare Provider Taxonomy (HIPAA)",
+            "streetAddressLine": "",
+            "facility_oid": "2.16.840.1.113883.4.6",
+            "facility_npi": "",
+            "facility_name": "EPA | Programa Mujer",
+            "city": "",
+            "state": "",
+            "postalCode": "",
+            "country": "",
+            "telecom": "",
+            "fname": "Alejandro S.",
+            "lname": "D'Alessandro",
+            "npi": ""
+        },
+        "is_active": "inactive"
+    },
+    "encounter_list": "",
+    "primary_diagnosis": {
+        "root": "",
+        "extension": "",
+        "encounter_date": "",
+        "encounter_end_date": "",
+        "code": "",
+        "code_type": "",
+        "text": "",
+        "status": ""
+    },
+    "allergies": "",
+    "medications": "",
+    "problem_lists": "",
+    "procedures": "",
+    "results": "",
+    "immunizations": "",
+    "planofcare": "",
+    "goals": "",
+    "health_concerns": "",
+    "social_history_sdoh": "",
+    "functional_status": "",
+    "mental_status": "",
+    "clinical_instruction": "",
+    "medical_devices": "",
+    "payers": "",
+    "advance_directives": "",
+    "clinical_notes": "",
+    "progressNotes": "",
+    "hospitalCourse": {
+        "item": ""
+    },
+    "dischargediagnosis": {
+        "item": ""
+    },
+    "dischargemedication": {
+        "item": ""
+    },
+    "procedure_notes": {
+        "complications": {
+            "age": "55",
+            "item": ""
+        },
+        "procedure_diagnosis": {
+            "age": "55",
+            "item": ""
+        },
+        "procedure_description": {
+            "item": ""
+        },
+        "procedure_indications": {
+            "item": ""
+        }
+    },
+    "operative_notes": {
+        "anesthesia": {
+            "item": ""
+        },
+        "post_operative_diag": {
+            "item": ""
+        },
+        "pre_operative_diag": {
+            "item": ""
+        },
+        "blood_loss": {
+            "item": ""
+        },
+        "procedure_findings": {
+            "item": "",
+            "age": "55"
+        },
+        "procedure_specimens": {
+            "item": ""
+        }
+    },
+    "consultation_notes": {
+        "hp": {
+            "item": ""
+        },
+        "physical_exam": {
+            "item": ""
+        }
+    },
+    "history_physical": {
+        "chief_complaint": {
+            "item": ""
+        },
+        "general_status": {
+            "item": ""
+        },
+        "history_past_illness": {
+            "item": ""
+        },
+        "review_of_systems": {
+            "item": ""
+        },
+        "vitals_list": "",
+        "social_history": ""
+    },
+    "document": ""
+}
