@@ -1,0 +1,82 @@
+{#
+ # Jitsi Meet conference room overlay template.
+ # Embeds the Jitsi Meet IFrame API for video consultations.
+ #
+ # @package   openemr
+ # @author    EPA Bienestar
+ # @copyright Copyright (c) 2024 EPA Bienestar
+ # @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+#}
+
+{# Fullscreen conference room container #}
+<div id="jitsi-telehealth-container" class="jitsi-telehealth-container d-none">
+    <div class="jitsi-telehealth-header">
+        <div class="jitsi-telehealth-header-info">
+            <i class="fa fa-video"></i>
+            <span class="jitsi-telehealth-title">{{ "Jitsi TeleHealth Session" | xlt }}</span>
+            <span class="jitsi-telehealth-patient-name"></span>
+        </div>
+        <div class="jitsi-telehealth-header-actions">
+            <button class="btn btn-sm btn-outline-light jitsi-btn-minimize" title="{{ 'Minimize' | xla }}">
+                <i class="fa fa-window-minimize"></i>
+            </button>
+            <button class="btn btn-sm btn-danger jitsi-btn-hangup" title="{{ 'End Session' | xla }}">
+                <i class="fa fa-phone-slash"></i> {{ "End" | xlt }}
+            </button>
+        </div>
+    </div>
+    <div id="jitsi-meet-frame" class="jitsi-meet-frame"></div>
+</div>
+
+{# Minimized floating window #}
+<div id="jitsi-telehealth-minimized" class="jitsi-telehealth-minimized d-none">
+    <div class="jitsi-minimized-content">
+        <i class="fa fa-video"></i>
+        <span>{{ "TeleHealth Active" | xlt }}</span>
+    </div>
+    <div class="jitsi-minimized-actions">
+        <button class="btn btn-sm btn-primary jitsi-btn-maximize" title="{{ 'Maximize' | xla }}">
+            <i class="fa fa-window-maximize"></i>
+        </button>
+        <button class="btn btn-sm btn-danger jitsi-btn-hangup-mini" title="{{ 'End Session' | xla }}">
+            <i class="fa fa-phone-slash"></i>
+        </button>
+    </div>
+</div>
+
+{# Hangup confirmation modal #}
+<div class="modal fade" id="jitsi-hangup-confirm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ "Confirm Session Close" | xlt }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ 'Close' | xla }}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="jitsi-hangup-confirm-section">
+                    <p>{{ "Are you sure you want to end this telehealth session?" | xlt }}</p>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary" data-dismiss="modal">{{ "Cancel" | xlt }}</button>
+                        <button class="btn btn-danger jitsi-btn-confirm-hangup">{{ "End Session" | xlt }}</button>
+                    </div>
+                </div>
+                <div class="jitsi-hangup-status-section d-none mt-3">
+                    <h6>{{ "Update Appointment Status" | xlt }}</h6>
+                    <div class="d-flex justify-content-between mt-2">
+                        <button class="btn btn-secondary btn-sm jitsi-btn-set-status" data-status="CloseWithoutUpdating">
+                            {{ "Close Without Updating" | xlt }}
+                        </button>
+                        <button class="btn btn-warning btn-sm jitsi-btn-set-status" data-status="?">
+                            {{ "No Show" | xlt }}
+                        </button>
+                        <button class="btn btn-success btn-sm jitsi-btn-set-status" data-status=">">
+                            {{ "Checked Out" | xlt }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
