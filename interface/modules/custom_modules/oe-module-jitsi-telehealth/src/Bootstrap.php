@@ -135,7 +135,10 @@ class Bootstrap
 
     public function renderMainBodyScripts(): void
     {
+        // Render the conference room HTML containers first
+        echo $this->twig->render('jitsi/conference-room.twig', []);
         ?>
+        <script src="https://<?php echo attr($this->globalsConfig->getJitsiServerDomain()); ?>/external_api.js"></script>
         <script src="<?php echo $this->getAssetPath(); ?>../<?php echo CacheUtils::addAssetCacheParamToPath("index.php"); ?>&action=get_telehealth_settings"></script>
         <link rel="stylesheet" href="<?php echo $this->getAssetPath(); ?>css/<?php echo CacheUtils::addAssetCacheParamToPath("jitsi-telehealth.css"); ?>">
         <script src="<?php echo $this->getAssetPath(); ?>js/<?php echo CacheUtils::addAssetCacheParamToPath("jitsi-telehealth.js"); ?>"></script>
