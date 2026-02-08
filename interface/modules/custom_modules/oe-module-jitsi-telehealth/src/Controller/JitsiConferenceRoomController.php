@@ -140,11 +140,11 @@ class JitsiConferenceRoomController
                 $this->sessionRepository->updateStartTimestamp($pc_eid, 'provider');
                 // Set the encounter and patient in session for the provider
                 if (!empty($appt['pc_pid'])) {
-                    PatientSessionUtil::setSessionPatientId($appt['pc_pid']);
+                    PatientSessionUtil::setPid($appt['pc_pid']);
                 }
                 $encounter = $this->getOrCreateEncounter($appt);
                 if (!empty($encounter)) {
-                    EncounterSessionUtil::setSessionEncounterValue($encounter);
+                    EncounterSessionUtil::setEncounter(strval($encounter));
                 }
             }
 
@@ -229,12 +229,12 @@ class JitsiConferenceRoomController
             $appt = $appt[0];
 
             if (!empty($appt['pc_pid'])) {
-                PatientSessionUtil::setSessionPatientId($appt['pc_pid']);
+                PatientSessionUtil::setPid($appt['pc_pid']);
             }
 
             $encounter = $this->getOrCreateEncounter($appt);
             if (!empty($encounter)) {
-                EncounterSessionUtil::setSessionEncounterValue($encounter);
+                EncounterSessionUtil::setEncounter(strval($encounter));
             }
 
             header('Content-Type: application/json');
