@@ -1,0 +1,226 @@
+/**
+ * Jitsi Meet TeleHealth Styles for OpenEMR.
+ *
+ * @package   openemr
+ * @author    EPA Bienestar
+ * @copyright Copyright (c) 2024 EPA Bienestar
+ * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+ */
+
+/* ==========================================
+   Conference Room Container
+   ========================================== */
+
+.jitsi-telehealth-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+}
+
+.jitsi-telehealth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: #16213e;
+    color: #ffffff;
+    border-bottom: 1px solid #0f3460;
+    min-height: 48px;
+    z-index: 10001;
+}
+
+.jitsi-telehealth-header-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.jitsi-telehealth-header-info .fa-video {
+    color: #4ecca3;
+    font-size: 1.1em;
+}
+
+.jitsi-telehealth-title {
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.jitsi-telehealth-patient-name {
+    font-size: 0.9em;
+    opacity: 0.85;
+}
+
+.jitsi-telehealth-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.jitsi-meet-frame {
+    flex: 1;
+    overflow: hidden;
+}
+
+.jitsi-meet-frame iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+}
+
+/* ==========================================
+   Minimized Floating Window
+   ========================================== */
+
+.jitsi-telehealth-minimized {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10000;
+    background: #16213e;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid #0f3460;
+    cursor: pointer;
+    animation: jitsi-pulse 2s infinite;
+}
+
+.jitsi-minimized-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jitsi-minimized-content .fa-video {
+    color: #4ecca3;
+    animation: jitsi-blink 1.5s infinite;
+}
+
+.jitsi-minimized-actions {
+    display: flex;
+    gap: 6px;
+}
+
+@keyframes jitsi-pulse {
+    0% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+    50% { box-shadow: 0 4px 20px rgba(78, 204, 163, 0.3); }
+    100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+}
+
+@keyframes jitsi-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ==========================================
+   Calendar Event Styling
+   ========================================== */
+
+.event_jitsi_telehealth {
+    border-left: 3px solid #4a90d9 !important;
+}
+
+.event_jitsi_telehealth.event_telehealth_active {
+    cursor: pointer;
+    border-left: 3px solid #4ecca3 !important;
+}
+
+.event_jitsi_telehealth.event_telehealth_active:hover {
+    background-color: rgba(78, 204, 163, 0.1) !important;
+}
+
+.event_jitsi_telehealth.event_telehealth_completed {
+    opacity: 0.65;
+    border-left: 3px solid #6c757d !important;
+}
+
+/* ==========================================
+   Launch Button
+   ========================================== */
+
+.btn-jitsi-launch-telehealth {
+    background-color: #4a90d9;
+    border-color: #4a90d9;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-jitsi-launch-telehealth:hover {
+    background-color: #3a7cc3;
+    border-color: #3a7cc3;
+    color: #ffffff;
+}
+
+.btn-jitsi-launch-telehealth .fa-video {
+    margin-right: 4px;
+}
+
+/* Patient portal telehealth button */
+.btn-jitsi-patient-telehealth {
+    background-color: #4ecca3;
+    border-color: #4ecca3;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-jitsi-patient-telehealth:hover {
+    background-color: #3db890;
+    border-color: #3db890;
+    color: #ffffff;
+}
+
+/* ==========================================
+   Hangup Modal
+   ========================================== */
+
+#jitsi-hangup-confirm .modal-header {
+    background: #16213e;
+    color: #ffffff;
+    border-bottom: 1px solid #0f3460;
+}
+
+#jitsi-hangup-confirm .modal-header .close {
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+#jitsi-hangup-confirm .modal-body {
+    padding: 20px;
+}
+
+/* ==========================================
+   Responsive
+   ========================================== */
+
+@media (max-width: 768px) {
+    .jitsi-telehealth-minimized {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        justify-content: space-between;
+    }
+
+    .jitsi-telehealth-header {
+        padding: 6px 10px;
+    }
+
+    .jitsi-telehealth-title {
+        font-size: 0.85em;
+    }
+}
