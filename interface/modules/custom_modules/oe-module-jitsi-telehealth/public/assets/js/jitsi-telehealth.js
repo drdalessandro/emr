@@ -2,6 +2,13 @@
  * Jitsi Meet TeleHealth Integration for OpenEMR.
  * Uses the Jitsi Meet IFrame API to embed video conferencing.
  *
+ * IMPORTANT: OpenEMR uses iframes. The conference room HTML lives in the
+ * TOP frame (main.php via RenderEvent::EVENT_BODY_RENDER_POST), while
+ * launch buttons live in CHILD iframes (calendar, appointment edit).
+ * This script runs in both contexts:
+ *   - In child iframes: click handlers delegate to window.top.JitsiTeleHealth.launch()
+ *   - In the top frame: manages the Jitsi session and DOM containers
+ *
  * @package   openemr
  * @author    EPA Bienestar
  * @copyright Copyright (c) 2024 EPA Bienestar
@@ -11,19 +18,77 @@
 (function (window, document) {
     'use strict';
 
-    // Module-level state
-    let jitsiApi = null;
-    let currentSession = null;
-    let heartbeatInterval = null;
-    let isPatientPortal = false;
+    // Detect frame context
+    var isTopFrame = (window === window.top);
+    var isPatientPortal = window.location.pathname.indexOf('/portal/') !== -1;
 
-    const HEARTBEAT_INTERVAL_MS = 10000; // 10 seconds
-    const MODULE_PATH = (function () {
-        const scripts = document.querySelectorAll('script[src*="jitsi-telehealth"]');
+    // Reference to the top frame's document where conference room HTML lives
+    var topWin = isPatientPortal ? window : window.top;
+    var topDoc = topWin.document;
+
+    // ========================================================================
+    // CHILD IFRAME CONTEXT: only bind click handlers that delegate to top frame
+    // ========================================================================
+    if (!isTopFrame && !isPatientPortal) {
+        function bindChildFrameEvents() {
+            document.addEventListener('click', function (e) {
+                // Launch button in appointment edit
+                var launchBtn = e.target.closest('.btn-jitsi-launch-telehealth');
+                if (launchBtn) {
+                    e.preventDefault();
+                    var eid = launchBtn.getAttribute('data-eid');
+                    var pid = launchBtn.getAttribute('data-pid');
+                    if (eid && window.top.JitsiTeleHealth) {
+                        window.top.JitsiTeleHealth.launch(eid, pid);
+                    } else {
+                        console.error('JitsiTeleHealth: Top frame module not available');
+                    }
+                    return;
+                }
+
+                // Calendar event click for telehealth
+                var telehealthEvent = e.target.closest('.event_jitsi_telehealth.event_telehealth_active');
+                if (telehealthEvent) {
+                    var eidAttr = telehealthEvent.getAttribute('data-eid');
+                    if (eidAttr && window.top.JitsiTeleHealth) {
+                        e.preventDefault();
+                        window.top.JitsiTeleHealth.launch(eidAttr, null);
+                    }
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindChildFrameEvents);
+        } else {
+            bindChildFrameEvents();
+        }
+        console.log('JitsiTeleHealth: Child frame handler initialized');
+        return; // Stop here - the rest only runs in the top frame or patient portal
+    }
+
+    // ========================================================================
+    // TOP FRAME CONTEXT (or patient portal): full Jitsi session management
+    // ========================================================================
+
+    var jitsiApi = null;
+    var currentSession = null;
+    var heartbeatInterval = null;
+
+    var HEARTBEAT_INTERVAL_MS = 10000; // 10 seconds
+
+    // Discover the module's public path from script tags in the top frame
+    var MODULE_PATH = (function () {
+        var scripts = topDoc.querySelectorAll('script[src*="jitsi-telehealth"]');
         if (scripts.length > 0) {
-            const src = scripts[scripts.length - 1].src;
-            // Navigate from assets/js/jitsi-telehealth.js to the module public root
+            var src = scripts[scripts.length - 1].src;
             return src.substring(0, src.lastIndexOf('/assets/')) + '/';
+        }
+        // Fallback: look for the settings script
+        var settingsScripts = topDoc.querySelectorAll('script[src*="action=get_telehealth_settings"]');
+        if (settingsScripts.length > 0) {
+            var ssrc = settingsScripts[settingsScripts.length - 1].src;
+            return ssrc.substring(0, ssrc.indexOf('index.php')) ;
         }
         return '';
     })();
@@ -43,7 +108,7 @@
      */
     function apiCall(action, params) {
         params = params || {};
-        const url = new URL(getApiPath(), window.location.origin);
+        var url = new URL(getApiPath(), topWin.location.origin);
         url.searchParams.set('action', action);
 
         Object.keys(params).forEach(function (key) {
@@ -52,13 +117,13 @@
             }
         });
 
-        const headers = {};
-        if (typeof top !== 'undefined' && top.restoreSession) {
-            top.restoreSession();
+        var headers = {};
+        if (topWin.restoreSession) {
+            topWin.restoreSession();
         }
 
         // Add CSRF token if available
-        const csrfToken = typeof csrfTokenJs !== 'undefined' ? csrfTokenJs : '';
+        var csrfToken = topWin.csrfTokenJs || '';
         if (csrfToken) {
             headers['apicsrftoken'] = csrfToken;
         }
@@ -76,23 +141,24 @@
     }
 
     /**
-     * Load the Jitsi Meet External API script dynamically.
+     * Load the Jitsi Meet External API script in the top frame.
      */
     function loadJitsiScript(domain) {
         return new Promise(function (resolve, reject) {
-            if (typeof JitsiMeetExternalAPI !== 'undefined') {
+            // Check in top frame context
+            if (typeof topWin.JitsiMeetExternalAPI !== 'undefined') {
                 resolve();
                 return;
             }
 
-            const script = document.createElement('script');
+            var script = topDoc.createElement('script');
             script.src = 'https://' + domain + '/external_api.js';
             script.async = true;
             script.onload = resolve;
             script.onerror = function () {
                 reject(new Error('Failed to load Jitsi Meet API from ' + domain));
             };
-            document.head.appendChild(script);
+            topDoc.head.appendChild(script);
         });
     }
 
@@ -127,11 +193,12 @@
      * Start the Jitsi Meet session using the IFrame API.
      */
     function startJitsiSession(config) {
-        const container = document.getElementById('jitsi-telehealth-container');
-        const frameContainer = document.getElementById('jitsi-meet-frame');
+        // All DOM lookups in the TOP frame document
+        var container = topDoc.getElementById('jitsi-telehealth-container');
+        var frameContainer = topDoc.getElementById('jitsi-meet-frame');
 
         if (!container || !frameContainer) {
-            console.error('JitsiTeleHealth: Container elements not found');
+            console.error('JitsiTeleHealth: Container elements not found in top frame document');
             return;
         }
 
@@ -217,9 +284,9 @@
             patientNameEl.textContent = '- ' + config.displayName;
         }
 
-        // Create Jitsi Meet instance
+        // Create Jitsi Meet instance using top frame's JitsiMeetExternalAPI
         try {
-            jitsiApi = new JitsiMeetExternalAPI(config.jitsiDomain, options);
+            jitsiApi = new topWin.JitsiMeetExternalAPI(config.jitsiDomain, options);
 
             // Event handlers
             jitsiApi.addListener('readyToClose', function () {
@@ -254,11 +321,11 @@
     }
 
     /**
-     * Show the conference room container.
+     * Show the conference room container (in top frame).
      */
     function showContainer() {
-        var container = document.getElementById('jitsi-telehealth-container');
-        var minimized = document.getElementById('jitsi-telehealth-minimized');
+        var container = topDoc.getElementById('jitsi-telehealth-container');
+        var minimized = topDoc.getElementById('jitsi-telehealth-minimized');
         if (container) {
             container.classList.remove('d-none');
         }
@@ -271,8 +338,8 @@
      * Minimize the conference room.
      */
     function minimizeSession() {
-        var container = document.getElementById('jitsi-telehealth-container');
-        var minimized = document.getElementById('jitsi-telehealth-minimized');
+        var container = topDoc.getElementById('jitsi-telehealth-container');
+        var minimized = topDoc.getElementById('jitsi-telehealth-minimized');
         if (container) {
             container.classList.add('d-none');
         }
@@ -329,9 +396,9 @@
             jitsiApi = null;
         }
 
-        // Hide containers
-        var container = document.getElementById('jitsi-telehealth-container');
-        var minimized = document.getElementById('jitsi-telehealth-minimized');
+        // Hide containers (in top frame)
+        var container = topDoc.getElementById('jitsi-telehealth-container');
+        var minimized = topDoc.getElementById('jitsi-telehealth-minimized');
         if (container) {
             container.classList.add('d-none');
         }
@@ -342,24 +409,26 @@
         // Show status update section if provider
         if (showStatusUpdate && currentSession && !isPatientPortal) {
             showHangupStatusUpdate();
+        } else {
+            currentSession = null;
         }
-
-        currentSession = null;
     }
 
     /**
-     * Show the hangup confirmation modal.
+     * Show the hangup confirmation modal (in top frame).
      */
     function showHangupConfirm() {
-        var modal = document.getElementById('jitsi-hangup-confirm');
+        var modal = topDoc.getElementById('jitsi-hangup-confirm');
         if (modal) {
             var confirmSection = modal.querySelector('.jitsi-hangup-confirm-section');
             var statusSection = modal.querySelector('.jitsi-hangup-status-section');
             if (confirmSection) confirmSection.classList.remove('d-none');
             if (statusSection) statusSection.classList.add('d-none');
 
-            if (typeof $ !== 'undefined') {
-                $(modal).modal('show');
+            if (typeof topWin.$ !== 'undefined') {
+                topWin.$(modal).modal('show');
+            } else if (typeof topWin.bootstrap !== 'undefined') {
+                new topWin.bootstrap.Modal(modal).show();
             } else {
                 modal.style.display = 'block';
                 modal.classList.add('show');
@@ -371,15 +440,17 @@
      * Show the appointment status update section.
      */
     function showHangupStatusUpdate() {
-        var modal = document.getElementById('jitsi-hangup-confirm');
+        var modal = topDoc.getElementById('jitsi-hangup-confirm');
         if (modal) {
             var confirmSection = modal.querySelector('.jitsi-hangup-confirm-section');
             var statusSection = modal.querySelector('.jitsi-hangup-status-section');
             if (confirmSection) confirmSection.classList.add('d-none');
             if (statusSection) statusSection.classList.remove('d-none');
 
-            if (typeof $ !== 'undefined') {
-                $(modal).modal('show');
+            if (typeof topWin.$ !== 'undefined') {
+                topWin.$(modal).modal('show');
+            } else if (typeof topWin.bootstrap !== 'undefined') {
+                new topWin.bootstrap.Modal(modal).show();
             } else {
                 modal.style.display = 'block';
                 modal.classList.add('show');
@@ -393,29 +464,35 @@
     function setAppointmentStatus(status) {
         if (!currentSession || status === 'CloseWithoutUpdating') {
             closeModal();
+            currentSession = null;
             return;
         }
 
         apiCall('set_appointment_status', {
             pc_eid: currentSession.pc_eid,
             status: status,
-            csrf_token: typeof csrfTokenJs !== 'undefined' ? csrfTokenJs : ''
+            csrf_token: topWin.csrfTokenJs || ''
         }).then(function () {
             closeModal();
+            currentSession = null;
         }).catch(function (err) {
             console.error('JitsiTeleHealth: Failed to update status', err);
             closeModal();
+            currentSession = null;
         });
     }
 
     /**
-     * Close the modal.
+     * Close the modal (in top frame).
      */
     function closeModal() {
-        var modal = document.getElementById('jitsi-hangup-confirm');
+        var modal = topDoc.getElementById('jitsi-hangup-confirm');
         if (modal) {
-            if (typeof $ !== 'undefined') {
-                $(modal).modal('hide');
+            if (typeof topWin.$ !== 'undefined') {
+                topWin.$(modal).modal('hide');
+            } else if (typeof topWin.bootstrap !== 'undefined') {
+                var bsModal = topWin.bootstrap.Modal.getInstance(modal);
+                if (bsModal) bsModal.hide();
             } else {
                 modal.style.display = 'none';
                 modal.classList.remove('show');
@@ -444,32 +521,12 @@
     }
 
     // ========================================
-    // Event Binding
+    // Event Binding (top frame)
     // ========================================
 
-    function bindEvents() {
-        // Provider: Launch button in appointment edit
-        document.addEventListener('click', function (e) {
-            var launchBtn = e.target.closest('.btn-jitsi-launch-telehealth');
-            if (launchBtn) {
-                e.preventDefault();
-                var eid = launchBtn.getAttribute('data-eid');
-                var pid = launchBtn.getAttribute('data-pid');
-                if (eid) {
-                    launchSession(eid, pid);
-                }
-            }
-
-            // Calendar event click for telehealth
-            var telehealthEvent = e.target.closest('.event_jitsi_telehealth.event_telehealth_active');
-            if (telehealthEvent) {
-                var eidAttr = telehealthEvent.getAttribute('data-eid');
-                if (eidAttr) {
-                    e.preventDefault();
-                    launchSession(eidAttr, null);
-                }
-            }
-
+    function bindTopFrameEvents() {
+        // Listen for clicks on the top frame document (conference room UI controls)
+        topDoc.addEventListener('click', function (e) {
             // Minimize button
             if (e.target.closest('.jitsi-btn-minimize')) {
                 e.preventDefault();
@@ -505,39 +562,46 @@
                 setAppointmentStatus(statusBtn.getAttribute('data-status'));
             }
 
-            // Patient portal telehealth button
+            // Patient portal telehealth button (same frame)
             var patientBtn = e.target.closest('.btn-jitsi-patient-telehealth');
             if (patientBtn) {
                 e.preventDefault();
-                isPatientPortal = true;
                 var patientEid = patientBtn.getAttribute('data-eid');
                 if (patientEid) {
                     patientLaunchSession(patientEid);
+                }
+            }
+
+            // Also handle launch button if clicked in top frame directly
+            var launchBtn = e.target.closest('.btn-jitsi-launch-telehealth');
+            if (launchBtn) {
+                e.preventDefault();
+                var eid = launchBtn.getAttribute('data-eid');
+                var pid = launchBtn.getAttribute('data-pid');
+                if (eid) {
+                    launchSession(eid, pid);
                 }
             }
         });
     }
 
     // ========================================
-    // Initialize
+    // Initialize (top frame)
     // ========================================
 
     function init() {
-        // Detect if we're in the patient portal
-        isPatientPortal = window.location.pathname.indexOf('/portal/') !== -1;
-        bindEvents();
-        console.log('JitsiTeleHealth: Module initialized');
+        bindTopFrameEvents();
+        console.log('JitsiTeleHealth: Top frame module initialized');
     }
 
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    if (topDoc.readyState === 'loading') {
+        topDoc.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
 
-    // Expose public API for external use
-    window.JitsiTeleHealth = {
+    // Expose public API on the TOP window for child iframes to call
+    topWin.JitsiTeleHealth = {
         launch: launchSession,
         end: endSession,
         patientLaunch: patientLaunchSession
